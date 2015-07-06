@@ -17,30 +17,19 @@
         #map-canvas {
             height: 100%
         }
+        
+        .table {
+            position: absolute;
+            right: 10px;
+            bottom: 20px;
+            background-color: #EEEEEE;
+        }
+        
+
+
     </style>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAAlLGrDMvUTdHfnXiKN3yUiSrBAolRKZg&sensor=true"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script type="text/javascript">
-        function initialize(){
-            var chicago = new google.maps.LatLng(52.5167, 13.3833);
-            var mapOptions = {
-                zoom: 11,
-                center: chicago
-            }
-
-            var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-
-            var ctaLayer = new google.maps.KmlLayer({
-                url: 'https://sites.google.com/site/darya0705website/kmlhosting/gez-test-three-adresses.kml'
-            });
-            ctaLayer.setMap(map);
-
-        }
-
-
-
-        google.maps.event.addDomListener(window, 'load', initialize);
-    </script>
 </head>
 
 <body>
@@ -48,7 +37,7 @@
 
     <div id="map-canvas">
     </div>
-    <table>
+    <table class="table">
         <thead>
             <tr>
                 <th>
@@ -66,8 +55,16 @@
         </tbody>
     </table>
     <script>
-    
+        /* global google*/
         
+        var mapCenter = new google.maps.LatLng(52.5167, 13.3833);
+        var mapOptions = {
+            zoom: 13,
+            center: mapCenter 
+        };
+
+          
+        var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
     
         $.ajax({
             method: 'GET',
@@ -87,8 +84,8 @@
                     row.appendChild(cell);
                 }
 
-                for (var i = 0; i < data.features.length; i++){
-                    var featureProps = data.features[i].properties;
+                data.features.forEach(function(feature){
+                    var featureProps = feature.properties;
                     
                     var trow = document.createElement("tr");
                     var checkBox = document.createElement('input');
@@ -99,13 +96,20 @@
                     addCell(trow, featureProps.contact);
                     
                     tbody.appendChild(trow);
-                }
+                });
                 
+                
+                // map.data.loadGeoJson(data)
+                map.data.addGeoJson(data);
+                
+                //$('#table-body').offset({top: 5000, left: 0});
             },
             error: function geojesonRequestError(err){
                 console.log(err);
             }
         });
+        
+        
         
 
 
